@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Frango - App Frango</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🍗 Calculadora de Frango</h1>
+            <p>Informe a quantidade que sobrou de cada tipo de frango</p>
+        </header>
+
+        <div class="date-section">
+            <label for="date">Data:</label>
+            <input type="date" id="date" value="">
+        </div>
+
+        <div class="table-container">
+            <table id="chickenTable">
+                <thead>
+                    <tr>
+                        <th>Tipo de Frango</th>
+                        <th>Trabalhar</th>
+                        <th>Cortes</th>
+                        <th>Total</th>
+                        <th class="highlight">Final (Sobrou)</th>
+                        <th>Fazer Porções</th>
+                        <th>Tirar - KG</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Peito</td>
+                        <td class="trabalhar" data-type="peito">9</td>
+                        <td class="cortes" data-type="peito">0</td>
+                        <td class="total" data-type="peito">9</td>
+                        <td><input type="number" class="final-input" data-type="peito" min="0" max="9" value="0"></td>
+                        <td class="porcoes" data-type="peito">9</td>
+                        <td class="peso" data-type="peito">14.4</td>
+                    </tr>
+                    <tr>
+                        <td>Coxa</td>
+                        <td class="trabalhar" data-type="coxa">11</td>
+                        <td class="cortes" data-type="coxa">0</td>
+                        <td class="total" data-type="coxa">11</td>
+                        <td><input type="number" class="final-input" data-type="coxa" min="0" max="11" value="0"></td>
+                        <td class="porcoes" data-type="coxa">11</td>
+                        <td class="peso" data-type="coxa">17.6</td>
+                    </tr>
+                    <tr>
+                        <td>Asa</td>
+                        <td class="trabalhar" data-type="asa">4</td>
+                        <td class="cortes" data-type="asa">4</td>
+                        <td class="total" data-type="asa">4</td>
+                        <td><input type="number" class="final-input" data-type="asa" min="0" max="4" value="0"></td>
+                        <td class="porcoes" data-type="asa">4</td>
+                        <td class="peso" data-type="asa">6.4</td>
+                    </tr>
+                    <tr>
+                        <td>Filé</td>
+                        <td class="trabalhar" data-type="file">24</td>
+                        <td class="cortes" data-type="file">24</td>
+                        <td class="total" data-type="file">24</td>
+                        <td><input type="number" class="final-input" data-type="file" min="0" max="24" value="0"></td>
+                        <td class="porcoes" data-type="file">24</td>
+                        <td class="peso" data-type="file">40.8</td>
+                    </tr>
+                    <tr>
+                        <td>Chick.</td>
+                        <td class="trabalhar" data-type="chick">3</td>
+                        <td class="cortes" data-type="chick">3</td>
+                        <td class="total" data-type="chick">3</td>
+                        <td><input type="number" class="final-input" data-type="chick" min="0" max="3" value="0"></td>
+                        <td class="porcoes" data-type="chick">3</td>
+                        <td class="peso" data-type="chick">4.8</td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr class="totals">
+                        <td><strong>Total</strong></td>
+                        <td><strong>51</strong></td>
+                        <td><strong>31</strong></td>
+                        <td><strong>51</strong></td>
+                        <td><strong id="totalFinal">7</strong></td>
+                        <td><strong id="totalPorcoes">44</strong></td>
+                        <td><strong id="totalPeso">72.8</strong></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+
+        <div class="controls">
+            <button id="salvarDiaBtn" class="btn btn-success">💾 Salvar no Histórico</button>
+            <button id="historicoBtn" class="btn btn-info">📊 Consultar Histórico</button>
+            <button id="resetBtn" class="btn btn-secondary">Limpar Tudo</button>
+            <button id="configBtn" class="btn btn-info">⚙️ Configurar Feriados</button>
+            <button id="printBtn" class="btn btn-primary">Imprimir</button>
+        </div>
+
+        <!-- Modal de Configuração de Feriados -->
+        <div id="feriadosModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>⚙️ Configurar Feriados Personalizados</h2>
+                <p>Adicione feriados locais ou específicos da sua região</p>
+                
+                <div class="feriados-form">
+                    <div class="form-group">
+                        <label for="novoFeriado">Data do Feriado:</label>
+                        <input type="date" id="novoFeriado" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="nomeFeriado">Nome do Feriado:</label>
+                        <input type="text" id="nomeFeriado" class="form-input" placeholder="Ex: Aniversário da Cidade">
+                    </div>
+                    <button id="addFeriadoBtn" class="btn btn-success">➕ Adicionar Feriado</button>
+                </div>
+
+                <div class="feriados-lista">
+                    <h3>Feriados Personalizados:</h3>
+                    <ul id="listaFeriadosPersonalizados"></ul>
+                </div>
+
+                <div class="feriados-info">
+                    <h3>Feriados Nacionais Fixos:</h3>
+                    <ul>
+                        <li>01/01 - Ano Novo</li>
+                        <li>21/04 - Tiradentes</li>
+                        <li>01/05 - Dia do Trabalho</li>
+                        <li>07/09 - Independência do Brasil</li>
+                        <li>12/10 - Nossa Senhora Aparecida</li>
+                        <li>02/11 - Finados</li>
+                        <li>15/11 - Proclamação da República</li>
+                        <li>20/11 - Consciência Negra</li>
+                        <li>25/12 - Natal</li>
+                    </ul>
+                    <p><em>* Feriados móveis (Carnaval, Sexta-feira Santa, Corpus Christi) já estão incluídos até 2026</em></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal de Histórico -->
+        <div id="historicoModal" class="modal">
+            <div class="modal-content modal-large">
+                <span class="close" id="closeHistorico">&times;</span>
+                <h2>📊 Histórico de Vendas</h2>
+                <p>Consulte e analise dados de períodos anteriores</p>
+                
+                <div class="historico-consulta">
+                    <div class="form-group inline">
+                        <label for="dataInicio">Data Início:</label>
+                        <input type="date" id="dataInicio" class="form-input">
+                    </div>
+                    <div class="form-group inline">
+                        <label for="dataFim">Data Fim:</label>
+                        <input type="date" id="dataFim" class="form-input">
+                    </div>
+                    <button id="consultarBtn" class="btn btn-primary">🔍 Consultar</button>
+                </div>
+
+                <div id="resultadosHistorico" class="resultados-container">
+                    <p class="instrucao">Selecione um período e clique em "Consultar" para ver os dados.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-section">
+            <h3>Informações:</h3>
+            <ul>
+                <li><strong>Peito, Coxa e Asa:</strong> 1.6 KG por porção</li>
+                <li><strong>Filé:</strong> 1.7 KG por porção</li>
+                <li><strong>Fazer Porções:</strong> Total - Final (Sobrou)</li>
+                <li><strong>Tirar KG:</strong> Fazer Porções × Peso por porção</li>
+            </ul>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

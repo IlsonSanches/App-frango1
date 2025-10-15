@@ -1,0 +1,949 @@
+/* Reset e configurações básicas */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    padding: 20px;
+    color: #333;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+/* Header */
+header {
+    background: linear-gradient(135deg, #ff6b6b, #ffa500);
+    color: white;
+    padding: 30px;
+    text-align: center;
+}
+
+header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+header p {
+    font-size: 1.1rem;
+    opacity: 0.9;
+}
+
+/* Seção de data */
+.date-section {
+    padding: 20px 30px;
+    background: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.date-section label {
+    font-weight: 600;
+    margin-right: 10px;
+    color: #495057;
+}
+
+.date-section input {
+    padding: 8px 12px;
+    border: 2px solid #dee2e6;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+    max-width: 200px;
+}
+
+.date-section input:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+/* Indicador de tipo de dia */
+.tipo-dia {
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 1rem;
+    text-align: center;
+    max-width: 500px;
+    animation: slideIn 0.5s ease-out;
+}
+
+.dia-normal {
+    background: linear-gradient(135deg, #d4edda, #c3e6cb);
+    color: #155724;
+    border: 2px solid #c3e6cb;
+}
+
+.dia-especial {
+    background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+    color: #856404;
+    border: 2px solid #ffd93d;
+}
+
+.dia-feriado {
+    background: linear-gradient(135deg, #f8d7da, #f5c6cb);
+    color: #721c24;
+    border: 2px solid #f5c6cb;
+}
+
+.dia-vespera {
+    background: linear-gradient(135deg, #d1ecf1, #bee5eb);
+    color: #0c5460;
+    border: 2px solid #bee5eb;
+}
+
+.dia-domingo {
+    background: linear-gradient(135deg, #e2e3e5, #d6d8db);
+    color: #383d41;
+    border: 2px solid #d6d8db;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Container da tabela */
+.table-container {
+    padding: 30px;
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Cabeçalho da tabela */
+thead {
+    background: linear-gradient(135deg, #4facfe, #00f2fe);
+    color: white;
+}
+
+thead th {
+    padding: 15px 12px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+thead th.highlight {
+    background: rgba(255, 255, 255, 0.2);
+    font-weight: 700;
+}
+
+/* Corpo da tabela */
+tbody tr {
+    transition: background-color 0.3s ease;
+}
+
+tbody tr:nth-child(even) {
+    background: #f8f9fa;
+}
+
+tbody tr:hover {
+    background: #e3f2fd;
+}
+
+tbody td {
+    padding: 12px;
+    text-align: center;
+    border-bottom: 1px solid #e9ecef;
+    font-size: 0.95rem;
+}
+
+tbody td:first-child {
+    font-weight: 600;
+    text-align: left;
+    color: #495057;
+}
+
+/* Inputs */
+.final-input {
+    width: 80px;
+    padding: 8px;
+    border: 2px solid #dee2e6;
+    border-radius: 6px;
+    text-align: center;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    background: #fff;
+}
+
+.final-input:focus {
+    outline: none;
+    border-color: #ff6b6b;
+    box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.1);
+    transform: scale(1.05);
+}
+
+.final-input:hover {
+    border-color: #ff6b6b;
+}
+
+/* Células de resultado */
+.porcoes, .peso {
+    font-weight: 600;
+    color: #28a745;
+    background: rgba(40, 167, 69, 0.1);
+    border-radius: 4px;
+    padding: 8px;
+}
+
+.peso {
+    color: #dc3545;
+    background: rgba(220, 53, 69, 0.1);
+}
+
+/* Rodapé da tabela */
+tfoot {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+}
+
+tfoot td {
+    padding: 15px 12px;
+    font-weight: 700;
+    font-size: 1rem;
+}
+
+/* Controles */
+.controls {
+    padding: 30px;
+    text-align: center;
+    background: #f8f9fa;
+    border-top: 1px solid #e9ecef;
+}
+
+.btn {
+    padding: 12px 24px;
+    margin: 0 10px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 15px rgba(102, 126, 234, 0.3);
+}
+
+.btn-secondary {
+    background: linear-gradient(135deg, #6c757d, #495057);
+    color: white;
+}
+
+.btn-secondary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 15px rgba(108, 117, 125, 0.3);
+}
+
+.btn-info {
+    background: linear-gradient(135deg, #17a2b8, #138496);
+    color: white;
+}
+
+.btn-info:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 15px rgba(23, 162, 184, 0.3);
+}
+
+.btn-success {
+    background: linear-gradient(135deg, #28a745, #218838);
+    color: white;
+}
+
+.btn-success:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 15px rgba(40, 167, 69, 0.3);
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, #dc3545, #c82333);
+    color: white;
+    padding: 6px 12px;
+    font-size: 0.85rem;
+    margin-left: 10px;
+}
+
+.btn-danger:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 15px rgba(220, 53, 69, 0.3);
+}
+
+/* Seção de informações */
+.info-section {
+    padding: 30px;
+    background: #f8f9fa;
+    border-top: 1px solid #e9ecef;
+}
+
+.info-section h3 {
+    color: #495057;
+    margin-bottom: 15px;
+    font-size: 1.2rem;
+}
+
+.info-section ul {
+    list-style: none;
+    padding: 0;
+}
+
+.info-section li {
+    padding: 8px 0;
+    color: #6c757d;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.info-section li:last-child {
+    border-bottom: none;
+}
+
+.info-section strong {
+    color: #495057;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+    
+    .container {
+        border-radius: 15px;
+    }
+    
+    header h1 {
+        font-size: 2rem;
+    }
+    
+    .table-container {
+        padding: 15px;
+    }
+    
+    table {
+        font-size: 0.85rem;
+    }
+    
+    thead th, tbody td {
+        padding: 8px 6px;
+    }
+    
+    .final-input {
+        width: 60px;
+        padding: 6px;
+    }
+    
+    .btn {
+        padding: 10px 20px;
+        margin: 5px;
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 480px) {
+    header {
+        padding: 20px;
+    }
+    
+    header h1 {
+        font-size: 1.8rem;
+    }
+    
+    .date-section, .table-container, .controls, .info-section {
+        padding: 20px;
+    }
+    
+    table {
+        font-size: 0.8rem;
+    }
+    
+    thead th, tbody td {
+        padding: 6px 4px;
+    }
+    
+    .final-input {
+        width: 50px;
+        padding: 4px;
+    }
+}
+
+/* Animações */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.container {
+    animation: fadeIn 0.6s ease-out;
+}
+
+/* Modal */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.6);
+    animation: fadeIn 0.3s ease-out;
+}
+
+.modal-content {
+    background: white;
+    margin: 5% auto;
+    padding: 30px;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 600px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.close:hover,
+.close:focus {
+    color: #000;
+}
+
+.modal-content h2 {
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.modal-content p {
+    color: #6c757d;
+    margin-bottom: 20px;
+}
+
+.feriados-form {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 5px;
+}
+
+.form-input {
+    width: 100%;
+    padding: 10px;
+    border: 2px solid #dee2e6;
+    border-radius: 6px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.feriados-lista {
+    margin: 20px 0;
+}
+
+.feriados-lista h3 {
+    color: #495057;
+    margin-bottom: 10px;
+    font-size: 1.1rem;
+}
+
+.feriados-lista ul {
+    list-style: none;
+    padding: 0;
+}
+
+.feriados-lista li {
+    background: #e3f2fd;
+    padding: 10px 15px;
+    margin-bottom: 8px;
+    border-radius: 6px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #0c5460;
+}
+
+.feriados-info {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 10px;
+    margin-top: 20px;
+}
+
+.feriados-info h3 {
+    color: #495057;
+    margin-bottom: 10px;
+    font-size: 1.1rem;
+}
+
+.feriados-info ul {
+    list-style: none;
+    padding: 0;
+    columns: 2;
+    column-gap: 20px;
+}
+
+.feriados-info li {
+    padding: 5px 0;
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+.feriados-info p {
+    margin-top: 15px;
+    font-size: 0.85rem;
+    color: #6c757d;
+}
+
+/* Estilos para impressão */
+@media print {
+    body {
+        background: white;
+        padding: 0;
+    }
+    
+    .container {
+        box-shadow: none;
+        border-radius: 0;
+    }
+    
+    .controls {
+        display: none;
+    }
+    
+    .info-section {
+        display: none;
+    }
+    
+    .modal {
+        display: none !important;
+    }
+    
+    .final-input {
+        border: 1px solid #000;
+        background: white;
+    }
+    
+    header {
+        background: white !important;
+        color: black !important;
+    }
+    
+    thead {
+        background: #f0f0f0 !important;
+        color: black !important;
+    }
+    
+    tfoot {
+        background: #f0f0f0 !important;
+        color: black !important;
+    }
+}
+
+/* ====================ESTILOS HISTÓRICO ==================== */
+
+.modal-large {
+    max-width: 900px !important;
+}
+
+.historico-consulta {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    display: flex;
+    gap: 15px;
+    align-items: flex-end;
+    flex-wrap: wrap;
+}
+
+.form-group.inline {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    flex: 1;
+    min-width: 150px;
+}
+
+.resultados-container {
+    min-height: 200px;
+    margin-top: 20px;
+}
+
+.instrucao {
+    text-align: center;
+    color: #6c757d;
+    padding: 40px;
+    font-style: italic;
+}
+
+.sem-dados {
+    text-align: center;
+    color: #856404;
+    background: #fff3cd;
+    padding: 20px;
+    border-radius: 8px;
+    font-weight: 600;
+}
+
+.periodo-info {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.periodo-info h3 {
+    margin-bottom: 5px;
+    font-size: 1.2rem;
+}
+
+.periodo-info p {
+    margin: 0;
+    opacity: 0.9;
+}
+
+.tabela-historico-container {
+    overflow-x: auto;
+    margin-bottom: 20px;
+}
+
+.tabela-historico {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.tabela-historico thead {
+    background: linear-gradient(135deg, #4facfe, #00f2fe);
+    color: white;
+}
+
+.tabela-historico th {
+    padding: 12px 10px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.tabela-historico tbody tr {
+    border-bottom: 1px solid #e9ecef;
+    transition: background 0.3s ease;
+}
+
+.tabela-historico tbody tr:hover {
+    background: #f8f9fa;
+}
+
+.tabela-historico td {
+    padding: 10px;
+    text-align: center;
+    font-size: 0.9rem;
+}
+
+.tipo-normal {
+    background: #d4edda;
+    color: #155724;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+}
+
+.tipo-especial {
+    background: #fff3cd;
+    color: #856404;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+}
+
+.tipo-domingo {
+    background: #e2e3e5;
+    color: #383d41;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+}
+
+.destaque-porcoes {
+    font-weight: 700;
+    color: #28a745;
+    font-size: 1.1rem;
+}
+
+.destaque-kg {
+    font-weight: 700;
+    color: #dc3545;
+    font-size: 1.1rem;
+}
+
+.btn-mini {
+    padding: 4px 8px;
+    font-size: 0.75rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin: 2px;
+    color: white;
+}
+
+.btn-mini.btn-info {
+    background: #17a2b8;
+}
+
+.btn-mini.btn-info:hover {
+    background: #138496;
+    transform: translateY(-1px);
+}
+
+.btn-mini.btn-danger {
+    background: #dc3545;
+}
+
+.btn-mini.btn-danger:hover {
+    background: #c82333;
+    transform: translateY(-1px);
+}
+
+.totais-periodo {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white !important;
+    font-size: 1.05rem;
+}
+
+.totais-periodo td {
+    padding: 15px 10px;
+}
+
+.acoes-historico {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    padding: 20px 0;
+}
+
+/* Detalhes do registro */
+.detalhes-registro {
+    padding: 20px 0;
+}
+
+.detalhes-registro h3 {
+    color: #495057;
+    margin-bottom: 10px;
+}
+
+.tabela-detalhes {
+    width: 100%;
+    margin: 20px 0;
+    border-collapse: collapse;
+}
+
+.tabela-detalhes thead {
+    background: linear-gradient(135deg, #4facfe, #00f2fe);
+    color: white;
+}
+
+.tabela-detalhes th,
+.tabela-detalhes td {
+    padding: 10px;
+    text-align: center;
+    border: 1px solid #dee2e6;
+}
+
+.tabela-detalhes tbody tr:nth-child(even) {
+    background: #f8f9fa;
+}
+
+.totais-detalhes {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    font-weight: 700;
+}
+
+/* Estatísticas */
+.estatisticas {
+    padding: 20px 0;
+}
+
+.estatisticas h3 {
+    color: #495057;
+    margin-bottom: 5px;
+}
+
+.periodo-stats {
+    color: #6c757d;
+    margin-bottom: 20px;
+    font-style: italic;
+}
+
+.cards-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
+    margin: 20px 0;
+}
+
+.card-stat {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.card-stat h4 {
+    font-size: 0.9rem;
+    margin-bottom: 10px;
+    opacity: 0.9;
+}
+
+.valor-stat {
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+.tabela-stats {
+    width: 100%;
+    margin: 20px 0;
+    border-collapse: collapse;
+}
+
+.tabela-stats thead {
+    background: linear-gradient(135deg, #4facfe, #00f2fe);
+    color: white;
+}
+
+.tabela-stats th,
+.tabela-stats td {
+    padding: 10px;
+    text-align: center;
+    border: 1px solid #dee2e6;
+}
+
+.tabela-stats tbody tr:nth-child(even) {
+    background: #f8f9fa;
+}
+
+/* Responsividade para histórico */
+@media (max-width: 768px) {
+    .modal-large {
+        max-width: 95%;
+        margin: 2% auto;
+    }
+    
+    .historico-consulta {
+        flex-direction: column;
+    }
+    
+    .form-group.inline {
+        width: 100%;
+    }
+    
+    .tabela-historico {
+        font-size: 0.75rem;
+    }
+    
+    .tabela-historico th,
+    .tabela-historico td {
+        padding: 6px 4px;
+    }
+    
+    .btn-mini {
+        font-size: 0.7rem;
+        padding: 3px 6px;
+    }
+    
+    .cards-stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .acoes-historico {
+        flex-direction: column;
+    }
+    
+    .acoes-historico .btn {
+        width: 100%;
+    }
+}
