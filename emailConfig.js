@@ -9,9 +9,9 @@
 
 const EMAIL_CONFIG = {
     // Substitua pelos seus valores do EmailJS:
-    SERVICE_ID: 'SEU_SERVICE_ID',      // Ex: 'service_abc1234'
-    TEMPLATE_ID: 'SEU_TEMPLATE_ID',    // Ex: 'template_xyz5678'
-    PUBLIC_KEY: 'SUA_PUBLIC_KEY',      // Ex: 'abcdefgh123456'
+    SERVICE_ID: 'service_bzn3p0e',      // Ex: 'service_abc1234'
+    TEMPLATE_ID: 'template_5ff9i4k',    // Ex: 'template_xyz5678'
+    PUBLIC_KEY: 'vu1MEUERWl1VVK0J2',      // Ex: 'abcdefgh123456'
     
     // Destinatários (já configurados)
     DESTINATARIOS: [
@@ -20,8 +20,23 @@ const EMAIL_CONFIG = {
     ]
 };
 
+// Inicializar EmailJS quando a página carregar
+(function() {
+    if (typeof emailjs !== 'undefined') {
+        emailjs.init(EMAIL_CONFIG.PUBLIC_KEY);
+        console.log('✅ EmailJS inicializado com sucesso!');
+    }
+})();
+
 // Função para enviar email com os dados do histórico
 async function enviarEmailHistorico(dadosDia) {
+    // Verificar se EmailJS está carregado
+    if (typeof emailjs === 'undefined') {
+        console.error('❌ EmailJS não carregado! Verifique sua conexão.');
+        alert('⚠️ Serviço de email não disponível. Verifique sua internet.');
+        return false;
+    }
+    
     // Verificar se EmailJS está configurado
     if (!EMAIL_CONFIG.SERVICE_ID || EMAIL_CONFIG.SERVICE_ID === 'SEU_SERVICE_ID') {
         console.error('❌ EmailJS não configurado! Veja emailConfig.js');
