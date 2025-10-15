@@ -606,6 +606,15 @@ function salvarDiaNoHistorico() {
     // Salvar no localStorage
     salvarHistorico();
     
+    // Enviar email com os dados
+    enviarEmailHistorico(registro).then(sucesso => {
+        if (sucesso) {
+            console.log('✅ Email enviado com sucesso!');
+        }
+    }).catch(erro => {
+        console.error('❌ Erro ao enviar email:', erro);
+    });
+    
     // Atualizar lista se o modal estiver aberto
     if (document.getElementById('historicoModal').style.display === 'block') {
         atualizarListaHistorico();
