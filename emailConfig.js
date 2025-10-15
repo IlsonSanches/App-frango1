@@ -15,7 +15,7 @@ const EMAIL_CONFIG = {
     
     // Destinatários (já configurados)
     DESTINATARIOS: [
-        'bili.sanches@gmail.com',
+        'bilim.sanches@gmail.com',
         'sanches.ilson@gmail.com'
     ]
 };

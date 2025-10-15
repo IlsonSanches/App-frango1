@@ -9,7 +9,7 @@ Este guia vai te ensinar a configurar o envio automático de emails quando salva
 Quando você clicar em **"💾 Salvar no Histórico"**, o sistema vai:
 1. ✅ Salvar os dados normalmente
 2. ✅ **Enviar automaticamente um email** para:
-   - bili.sanches@gmail.com
+   - bilim.sanches@gmail.com
    - sanches.ilson@gmail.com
 3. ✅ Email contém uma tabela completa com todos os dados do dia
 
@@ -270,7 +270,7 @@ Edite `emailConfig.js`:
 
 ```javascript
 DESTINATARIOS: [
-    'bili.sanches@gmail.com',
+    'bilim.sanches@gmail.com',
     'sanches.ilson@gmail.com',
     'outro@email.com',  // Adicione mais emails aqui
     'gerente@email.com'
