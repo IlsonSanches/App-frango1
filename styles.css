@@ -113,6 +113,12 @@ header p {
     border: 2px solid #d6d8db;
 }
 
+.dia-quinta {
+    background: linear-gradient(135deg, #cfe2ff, #b6d4fe);
+    color: #084298;
+    border: 2px solid #b6d4fe;
+}
+
 @keyframes slideIn {
     from {
         opacity: 0;

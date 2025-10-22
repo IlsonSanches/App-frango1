@@ -1,5 +1,5 @@
 // Configurações dos tipos de frango
-// Valores padrão (dias normais)
+// Valores padrão (segunda a quarta)
 const chickenConfigNormal = {
     peito: { pesoPorPorcao: 1.6, total: 9 },
     coxa: { pesoPorPorcao: 1.6, total: 11 },
@@ -8,12 +8,21 @@ const chickenConfigNormal = {
     chick: { pesoPorPorcao: 1.6, total: 3 }
 };
 
+// Valores para quinta-feira
+const chickenConfigQuinta = {
+    peito: { pesoPorPorcao: 1.6, total: 9 },
+    coxa: { pesoPorPorcao: 1.6, total: 11 },
+    asa: { pesoPorPorcao: 1.6, total: 4 },
+    file: { pesoPorPorcao: 1.7, total: 26 },
+    chick: { pesoPorPorcao: 1.6, total: 3 }
+};
+
 // Valores para dias especiais (sexta, sábado, feriado, véspera de feriado)
 const chickenConfigEspecial = {
     peito: { pesoPorPorcao: 1.6, total: 12 },
     coxa: { pesoPorPorcao: 1.6, total: 14 },
     asa: { pesoPorPorcao: 1.6, total: 5 },
-    file: { pesoPorPorcao: 1.7, total: 40 },
+    file: { pesoPorPorcao: 1.7, total: 46 },
     chick: { pesoPorPorcao: 1.6, total: 3 }
 };
 
@@ -67,6 +76,7 @@ function criarDataLocal(dataString) {
     const [ano, mes, dia] = dataString.split('-').map(Number);
     return new Date(ano, mes - 1, dia);
 }
+
 
 // Função para verificar se é feriado
 function ehFeriado(data) {
@@ -136,13 +146,21 @@ function ehDomingo(data) {
 
 // Função para atualizar configuração baseado na data
 function atualizarConfigPorData(data) {
+    const dataObj = criarDataLocal(data);
+    const diaSemana = dataObj.getDay(); // 0 = Domingo, 4 = Quinta
+    
     if (ehDomingo(data)) {
         chickenConfig = { ...chickenConfigDomingo };
         return 'domingo';
     } else if (ehDiaEspecial(data)) {
         chickenConfig = { ...chickenConfigEspecial };
         return 'especial';
+    } else if (diaSemana === 4) {
+        // Quinta-feira
+        chickenConfig = { ...chickenConfigQuinta };
+        return 'quinta';
     } else {
+        // Segunda a Quarta
         chickenConfig = { ...chickenConfigNormal };
         return 'normal';
     }
@@ -209,6 +227,9 @@ function atualizarTipoDia(data) {
             classe = 'dia-vespera';
         }
         mensagem += ' (Quantidade especial)';
+    } else if (tipoDia === 'quinta') {
+        mensagem += ' (Filé: 26 porções)';
+        classe = 'dia-quinta';
     } else {
         mensagem += ' (Quantidade normal)';
         classe = 'dia-normal';
@@ -538,7 +559,87 @@ function carregarHistorico() {
     const salvos = localStorage.getItem('historicoVendas');
     if (salvos) {
         historicoVendas = JSON.parse(salvos);
+        console.log('📊 Histórico carregado:', historicoVendas.length, 'registros');
+    } else {
+        console.log('📊 Nenhum histórico encontrado no localStorage');
     }
+}
+
+// Função para criar dados de teste (debug)
+function criarDadosTeste() {
+    const hoje = new Date();
+    
+    // Criar registros para os últimos 5 dias
+    for (let i = 1; i <= 5; i++) {
+        const data = new Date(hoje);
+        data.setDate(hoje.getDate() - i);
+        
+        const registroTeste = {
+            data: data.toISOString().split('T')[0], // YYYY-MM-DD
+            diaSemana: data.toLocaleDateString('pt-BR', { weekday: 'long' }),
+            tipoDia: data.getDay() === 0 ? 'domingo' : 
+                     data.getDay() === 5 || data.getDay() === 6 ? 'especial' : 
+                     data.getDay() === 4 ? 'quinta' : 'normal',
+            dados: {
+                peito: { 
+                    trabalhar: data.getDay() === 0 ? 10 : data.getDay() === 5 || data.getDay() === 6 ? 12 : 9, 
+                    final: Math.floor(Math.random() * 3), 
+                    fazerPorcoes: 0, 
+                    tirarKg: 0 
+                },
+                coxa: { 
+                    trabalhar: data.getDay() === 0 ? 12 : data.getDay() === 5 || data.getDay() === 6 ? 14 : 11, 
+                    final: Math.floor(Math.random() * 2), 
+                    fazerPorcoes: 0, 
+                    tirarKg: 0 
+                },
+                asa: { 
+                    trabalhar: data.getDay() === 0 ? 4 : data.getDay() === 5 || data.getDay() === 6 ? 5 : 4, 
+                    final: Math.floor(Math.random() * 2), 
+                    fazerPorcoes: 0, 
+                    tirarKg: 0 
+                },
+                file: { 
+                    trabalhar: data.getDay() === 0 ? 32 : 
+                              data.getDay() === 5 || data.getDay() === 6 ? 46 : 
+                              data.getDay() === 4 ? 26 : 24, 
+                    final: Math.floor(Math.random() * 4), 
+                    fazerPorcoes: 0, 
+                    tirarKg: 0 
+                },
+                chick: { 
+                    trabalhar: 3, 
+                    final: Math.floor(Math.random() * 2), 
+                    fazerPorcoes: 0, 
+                    tirarKg: 0 
+                }
+            },
+            totais: {
+                trabalhar: 0,
+                final: 0,
+                fazerPorcoes: 0,
+                tirarKg: 0
+            }
+        };
+        
+        // Calcular valores calculados
+        Object.keys(registroTeste.dados).forEach(tipo => {
+            const dados = registroTeste.dados[tipo];
+            dados.fazerPorcoes = dados.trabalhar - dados.final;
+            dados.tirarKg = dados.fazerPorcoes * (tipo === 'file' ? 1.7 : 1.6);
+        });
+        
+        // Calcular totais
+        registroTeste.totais.trabalhar = Object.values(registroTeste.dados).reduce((sum, item) => sum + item.trabalhar, 0);
+        registroTeste.totais.final = Object.values(registroTeste.dados).reduce((sum, item) => sum + item.final, 0);
+        registroTeste.totais.fazerPorcoes = Object.values(registroTeste.dados).reduce((sum, item) => sum + item.fazerPorcoes, 0);
+        registroTeste.totais.tirarKg = Object.values(registroTeste.dados).reduce((sum, item) => sum + item.tirarKg, 0);
+        
+        historicoVendas.push(registroTeste);
+    }
+    
+    salvarHistorico();
+    console.log('🧪 Dados de teste criados:', historicoVendas.length, 'registros');
 }
 
 // Salvar histórico no localStorage
@@ -606,18 +707,13 @@ function salvarDiaNoHistorico() {
     // Salvar no localStorage
     salvarHistorico();
     
-    // Enviar email com os dados
-    enviarEmailHistorico(registro).then(sucesso => {
-        if (sucesso) {
-            console.log('✅ Email enviado com sucesso!');
-        }
-    }).catch(erro => {
-        console.error('❌ Erro ao enviar email:', erro);
-    });
+    // Função de email (implementação futura)
+    console.log('✅ Dados salvos no histórico local!');
     
     // Atualizar lista se o modal estiver aberto
     if (document.getElementById('historicoModal').style.display === 'block') {
-        atualizarListaHistorico();
+        // Não há lista para atualizar no modal de histórico
+        // A consulta é feita através do botão "Consultar"
     }
 }
 
@@ -1020,6 +1116,12 @@ function abrirHistorico() {
     const mesI = String(trintaDiasAtras.getMonth() + 1).padStart(2, '0');
     const diaI = String(trintaDiasAtras.getDate()).padStart(2, '0');
     document.getElementById('dataInicio').value = `${anoI}-${mesI}-${diaI}`;
+    
+    // Se não há dados no histórico, criar dados de teste
+    if (historicoVendas.length === 0) {
+        criarDadosTeste();
+        alert('📊 Dados de teste criados! Agora você pode testar a consulta do histórico.');
+    }
 }
 
 function fecharHistorico() {
