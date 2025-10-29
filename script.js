@@ -707,7 +707,18 @@ function salvarDiaNoHistorico() {
     // Salvar no localStorage
     salvarHistorico();
     
-    // Função de email (implementação futura)
+    // Enviar email com os dados salvos (se configurado)
+    (async () => {
+        try {
+            const enviado = await enviarEmailHistorico(registro);
+            if (enviado) {
+                console.log('📧 Email de relatório enviado com sucesso.');
+            }
+        } catch (e) {
+            console.warn('⚠️ Falha ao enviar email de relatório.', e);
+        }
+    })();
+    
     console.log('✅ Dados salvos no histórico local!');
     
     // Atualizar lista se o modal estiver aberto

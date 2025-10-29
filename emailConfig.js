@@ -8,10 +8,10 @@
 // 4. Copie os IDs abaixo e cole aqui
 
 const EMAIL_CONFIG = {
-    // Substitua pelos seus valores do EmailJS:
-    SERVICE_ID: 'service_bzn3p0e',      // Ex: 'service_abc1234'
-    TEMPLATE_ID: 'template_5ff9i4k',    // Ex: 'template_xyz5678'
-    PUBLIC_KEY: 'vu1MEUERWl1VVK0J2',      // Ex: 'abcdefgh123456'
+    // Carrega de localStorage para evitar chaves hardcoded no código
+    SERVICE_ID: localStorage.getItem('EMAILJS_SERVICE_ID') || '',
+    TEMPLATE_ID: localStorage.getItem('EMAILJS_TEMPLATE_ID') || '',
+    PUBLIC_KEY: localStorage.getItem('EMAILJS_PUBLIC_KEY') || '',
     
     // Destinatários (já configurados)
     DESTINATARIOS: [
@@ -20,11 +20,29 @@ const EMAIL_CONFIG = {
     ]
 };
 
+// Utilitário para salvar chaves com segurança no navegador (localStorage)
+function configurarEmailJS({ serviceId, templateId, publicKey }) {
+    if (typeof serviceId === 'string') localStorage.setItem('EMAILJS_SERVICE_ID', serviceId.trim());
+    if (typeof templateId === 'string') localStorage.setItem('EMAILJS_TEMPLATE_ID', templateId.trim());
+    if (typeof publicKey === 'string') localStorage.setItem('EMAILJS_PUBLIC_KEY', publicKey.trim());
+    
+    EMAIL_CONFIG.SERVICE_ID = localStorage.getItem('EMAILJS_SERVICE_ID') || '';
+    EMAIL_CONFIG.TEMPLATE_ID = localStorage.getItem('EMAILJS_TEMPLATE_ID') || '';
+    EMAIL_CONFIG.PUBLIC_KEY = localStorage.getItem('EMAILJS_PUBLIC_KEY') || '';
+    
+    if (typeof emailjs !== 'undefined' && EMAIL_CONFIG.PUBLIC_KEY) {
+        emailjs.init(EMAIL_CONFIG.PUBLIC_KEY);
+        console.log('✅ EmailJS reconfigurado com sucesso!');
+    }
+}
+
 // Inicializar EmailJS quando a página carregar
 (function() {
-    if (typeof emailjs !== 'undefined') {
+    if (typeof emailjs !== 'undefined' && EMAIL_CONFIG.PUBLIC_KEY) {
         emailjs.init(EMAIL_CONFIG.PUBLIC_KEY);
         console.log('✅ EmailJS inicializado com sucesso!');
+    } else {
+        console.log('ℹ️ EmailJS aguardando configuração de chave pública.');
     }
 })();
 
@@ -38,9 +56,9 @@ async function enviarEmailHistorico(dadosDia) {
     }
     
     // Verificar se EmailJS está configurado
-    if (!EMAIL_CONFIG.SERVICE_ID || EMAIL_CONFIG.SERVICE_ID === 'SEU_SERVICE_ID') {
-        console.error('❌ EmailJS não configurado! Veja emailConfig.js');
-        alert('⚠️ Email não configurado. Configure o EmailJS primeiro.');
+    if (!EMAIL_CONFIG.SERVICE_ID || !EMAIL_CONFIG.TEMPLATE_ID || !EMAIL_CONFIG.PUBLIC_KEY) {
+        console.error('❌ EmailJS não configurado! Defina SERVICE_ID, TEMPLATE_ID e PUBLIC_KEY.');
+        alert('⚠️ Email não configurado. Defina SERVICE_ID, TEMPLATE_ID e PUBLIC_KEY nas configurações.');
         return false;
     }
 
