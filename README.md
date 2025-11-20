@@ -29,8 +29,16 @@ Um aplicativo web moderno para calcular as quantidades de frango a serem prepara
   - Adicione feriados locais/municipais personalizados
   - Gerencie sua própria lista de feriados
 
+- **💾 Sistema de Histórico Avançado**:
+  - Armazenamento em IndexedDB (banco de dados local robusto)
+  - Consultas por período (últimos 7 dias, mês, ano, etc)
+  - Exportação de dados para CSV
+  - Backup completo em JSON
+  - Importação de backups
+  - Estatísticas detalhadas
+
 - **Validação**: Impede valores inválidos (negativos ou acima do total disponível)
-- **Salvamento Automático**: Os dados são salvos automaticamente no navegador
+- **Salvamento Automático**: Os dados são salvos automaticamente no IndexedDB
 - **Design Responsivo**: Funciona perfeitamente em desktop, tablet e celular
 - **Impressão**: Botão para imprimir os resultados
 - **Reset**: Limpar todos os campos facilmente
@@ -85,18 +93,22 @@ As configurações são salvas automaticamente no navegador e aplicadas imediata
 ## 📁 Arquivos
 
 - `index.html` - Estrutura principal
-- `script.js` - Lógica de cálculo
+- `script.js` - Lógica de cálculo e interface
+- `indexedDB.js` - Gerenciamento do banco de dados local
+- `emailConfig.js` - Configuração de envio de emails
 - `styles.css` - Estilos e design
 - `README.md` - Este arquivo
 
 ## 💡 Dicas
 
-- Os dados são salvos automaticamente no navegador
-- Mude a data para ver as quantidades se ajustarem automaticamente
-- Adicione feriados municipais para melhor precisão
-- Use o botão "Limpar Tudo" para resetar todos os valores
-- O aplicativo funciona offline após carregado
-- Para imprimir, use o botão "Imprimir" ou Ctrl+P
+- 📊 **Banco de Dados Robusto**: Os dados são salvos no IndexedDB (muito mais confiável que cookies)
+- 💾 **Backup Regular**: Use "Exportar Backup" para criar cópias de segurança dos seus dados
+- 📅 **Histórico Ilimitado**: Consulte dados de meses ou anos anteriores sem limite
+- 🔄 **Migração Automática**: Dados antigos do localStorage são migrados automaticamente
+- 📈 **Estatísticas**: Veja médias, totais e comparações no histórico
+- 🎯 **Quantidades Personalizáveis**: Configure valores específicos para seu negócio
+- 🏖️ **Feriados Locais**: Adicione feriados municipais para cálculos precisos
+- 🌐 **Funciona Offline**: O aplicativo funciona completamente sem internet
 
 ## 📅 Feriados Incluídos
 

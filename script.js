@@ -415,11 +415,39 @@ function carregarDados() {
     }
 }
 
+// Inicializar aplicação
+document.addEventListener('DOMContentLoaded', async function() {
+    try {
+        // Inicializar IndexedDB
+        await inicializarDB();
+        console.log('🗄️ IndexedDB inicializado!');
+        
+        // Verificar se precisa migrar dados do localStorage
+        const historicoLocal = localStorage.getItem('historicoVendas');
+        if (historicoLocal) {
+            const confirmarMigracao = confirm('Foram encontrados dados antigos. Deseja migrar para o novo sistema de banco de dados?');
+            if (confirmarMigracao) {
+                await migrarLocalStorageParaIndexedDB();
+                alert('✅ Migração concluída com sucesso!');
+            }
+        }
+        
+        // Carregar dados
+        carregarDados();
+        await carregarFeriadosPersonalizados();
+        await carregarHistorico();
+        await carregarConfiguracoes();
+        
+        console.log('✅ Aplicação carregada com sucesso!');
+    } catch (error) {
+        console.error('❌ Erro ao inicializar aplicação:', error);
+        alert('⚠️ Erro ao inicializar. Por favor, recarregue a página.');
+    }
+});
+
 // Salvar dados automaticamente quando houver mudanças
 document.addEventListener('DOMContentLoaded', function() {
     carregarDados();
-    carregarFeriadosPersonalizados();
-    carregarHistorico();
     
     // Salvar quando houver mudanças
     const inputs = document.querySelectorAll('.final-input');
@@ -431,19 +459,22 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // Funções para gerenciar feriados personalizados
-function carregarFeriadosPersonalizados() {
-    const salvos = localStorage.getItem('feriadosPersonalizados');
-    if (salvos) {
-        feriadosPersonalizados = JSON.parse(salvos);
+async function carregarFeriadosPersonalizados() {
+    try {
+        const feriados = await buscarTodosFeriados();
+        feriadosPersonalizados = feriados;
+        await atualizarListaFeriados();
+    } catch (error) {
+        console.error('❌ Erro ao carregar feriados:', error);
+        feriadosPersonalizados = [];
     }
-    atualizarListaFeriados();
 }
 
-function salvarFeriadosPersonalizados() {
-    localStorage.setItem('feriadosPersonalizados', JSON.stringify(feriadosPersonalizados));
+async function salvarFeriadosPersonalizados() {
+    // Não necessário mais, feriados são salvos individualmente
 }
 
-function adicionarFeriado() {
+async function adicionarFeriado() {
     const dataInput = document.getElementById('novoFeriado');
     const nomeInput = document.getElementById('nomeFeriado');
     
@@ -460,41 +491,53 @@ function adicionarFeriado() {
         return;
     }
     
-    // Verificar se já existe
-    if (feriadosPersonalizados.some(f => f.data === data)) {
-        alert('Este feriado já está cadastrado.');
-        return;
-    }
-    
-    // Adicionar feriado
-    feriadosPersonalizados.push({ data, nome });
-    salvarFeriadosPersonalizados();
-    atualizarListaFeriados();
-    
-    // Limpar campos
-    dataInput.value = '';
-    nomeInput.value = '';
-    
-    // Atualizar tabela se a data atual for afetada
-    const dataAtual = document.getElementById('date').value;
-    atualizarTipoDia(dataAtual);
-    atualizarValoresTabela();
-}
-
-function removerFeriado(data) {
-    if (confirm('Deseja realmente remover este feriado?')) {
-        feriadosPersonalizados = feriadosPersonalizados.filter(f => f.data !== data);
-        salvarFeriadosPersonalizados();
-        atualizarListaFeriados();
+    try {
+        // Verificar se já existe
+        if (feriadosPersonalizados.some(f => f.data === data)) {
+            alert('Este feriado já está cadastrado.');
+            return;
+        }
+        
+        // Adicionar feriado no IndexedDB
+        await salvarFeriado(data, nome);
+        await carregarFeriadosPersonalizados();
+        
+        // Limpar campos
+        dataInput.value = '';
+        nomeInput.value = '';
         
         // Atualizar tabela se a data atual for afetada
         const dataAtual = document.getElementById('date').value;
         atualizarTipoDia(dataAtual);
         atualizarValoresTabela();
+        
+        alert('✅ Feriado adicionado com sucesso!');
+    } catch (error) {
+        console.error('❌ Erro ao adicionar feriado:', error);
+        alert('❌ Erro ao adicionar feriado. Tente novamente.');
     }
 }
 
-function atualizarListaFeriados() {
+async function removerFeriado(data) {
+    if (confirm('Deseja realmente remover este feriado?')) {
+        try {
+            await excluirFeriado(data);
+            await carregarFeriadosPersonalizados();
+            
+            // Atualizar tabela se a data atual for afetada
+            const dataAtual = document.getElementById('date').value;
+            atualizarTipoDia(dataAtual);
+            atualizarValoresTabela();
+            
+            alert('✅ Feriado removido com sucesso!');
+        } catch (error) {
+            console.error('❌ Erro ao remover feriado:', error);
+            alert('❌ Erro ao remover feriado. Tente novamente.');
+        }
+    }
+}
+
+async function atualizarListaFeriados() {
     const lista = document.getElementById('listaFeriadosPersonalizados');
     
     if (feriadosPersonalizados.length === 0) {
@@ -508,9 +551,10 @@ function atualizarListaFeriados() {
     lista.innerHTML = ordenados.map(feriado => {
         const dataObj = criarDataLocal(feriado.data);
         const dataFormatada = dataObj.toLocaleDateString('pt-BR');
+        const descricao = feriado.nome || feriado.descricao; // compatibilidade
         return `
             <li>
-                <span><strong>${dataFormatada}</strong> - ${feriado.nome}</span>
+                <span><strong>${dataFormatada}</strong> - ${descricao}</span>
                 <button class="btn btn-danger" onclick="removerFeriado('${feriado.data}')">🗑️ Remover</button>
             </li>
         `;
@@ -554,14 +598,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // ==================== SISTEMA DE HISTÓRICO ====================
 
-// Carregar histórico do localStorage
-function carregarHistorico() {
-    const salvos = localStorage.getItem('historicoVendas');
-    if (salvos) {
-        historicoVendas = JSON.parse(salvos);
-        console.log('📊 Histórico carregado:', historicoVendas.length, 'registros');
-    } else {
-        console.log('📊 Nenhum histórico encontrado no localStorage');
+// Carregar histórico do IndexedDB
+async function carregarHistorico() {
+    try {
+        historicoVendas = await buscarTodosRegistros();
+        console.log('📊 Histórico carregado do IndexedDB:', historicoVendas.length, 'registros');
+    } catch (error) {
+        console.error('❌ Erro ao carregar histórico:', error);
+        historicoVendas = [];
     }
 }
 
@@ -642,13 +686,14 @@ function criarDadosTeste() {
     console.log('🧪 Dados de teste criados:', historicoVendas.length, 'registros');
 }
 
-// Salvar histórico no localStorage
+// Salvar histórico (não necessário mais, cada registro salva direto no IndexedDB)
 function salvarHistorico() {
-    localStorage.setItem('historicoVendas', JSON.stringify(historicoVendas));
+    // Mantido para compatibilidade, mas não faz nada
+    // Os dados são salvos diretamente no IndexedDB via salvarRegistroVenda()
 }
 
 // Salvar dados do dia atual no histórico
-function salvarDiaNoHistorico() {
+async function salvarDiaNoHistorico() {
     const data = document.getElementById('date').value;
     
     if (!data) {
@@ -687,49 +732,58 @@ function salvarDiaNoHistorico() {
         tirarKg: Object.values(registro.dados).reduce((sum, item) => sum + item.tirarKg, 0)
     };
     
-    // Verificar se já existe registro para esta data
-    const indiceExistente = historicoVendas.findIndex(r => r.data === data);
-    
-    if (indiceExistente >= 0) {
-        // Atualizar registro existente
-        if (confirm(`Já existe um registro para ${criarDataLocal(data).toLocaleDateString('pt-BR')}. Deseja substituir?`)) {
-            historicoVendas[indiceExistente] = registro;
-            alert('Registro atualizado com sucesso!');
-        } else {
-            return;
-        }
-    } else {
-        // Adicionar novo registro
-        historicoVendas.push(registro);
-        alert('Dados salvos no histórico com sucesso!');
-    }
-    
-    // Salvar no localStorage
-    salvarHistorico();
-    
-    // Enviar email com os dados salvos (se configurado)
-    (async () => {
-        try {
-            const enviado = await enviarEmailHistorico(registro);
-            if (enviado) {
-                console.log('📧 Email de relatório enviado com sucesso.');
+    try {
+        // Recarregar dados do IndexedDB
+        await carregarHistorico();
+        
+        // Verificar se já existe registro para esta data
+        const indiceExistente = historicoVendas.findIndex(r => r.data === data);
+        
+        if (indiceExistente >= 0) {
+            // Atualizar registro existente
+            if (confirm(`Já existe um registro para ${criarDataLocal(data).toLocaleDateString('pt-BR')}. Deseja substituir?`)) {
+                // Excluir registro antigo
+                const registroAntigo = historicoVendas[indiceExistente];
+                if (registroAntigo.id) {
+                    await excluirRegistro(registroAntigo.id);
+                }
+                // Salvar novo registro
+                await salvarRegistroVenda(registro);
+                alert('✅ Registro atualizado com sucesso!');
+            } else {
+                return;
             }
-        } catch (e) {
-            console.warn('⚠️ Falha ao enviar email de relatório.', e);
+        } else {
+            // Adicionar novo registro no IndexedDB
+            await salvarRegistroVenda(registro);
+            alert('✅ Dados salvos no histórico com sucesso!');
         }
-    })();
-    
-    console.log('✅ Dados salvos no histórico local!');
-    
-    // Atualizar lista se o modal estiver aberto
-    if (document.getElementById('historicoModal').style.display === 'block') {
-        // Não há lista para atualizar no modal de histórico
-        // A consulta é feita através do botão "Consultar"
+        
+        // Recarregar histórico atualizado
+        await carregarHistorico();
+        
+        // Enviar email com os dados salvos (se configurado)
+        (async () => {
+            try {
+                const enviado = await enviarEmailHistorico(registro);
+                if (enviado) {
+                    console.log('📧 Email de relatório enviado com sucesso.');
+                }
+            } catch (e) {
+                console.warn('⚠️ Falha ao enviar email de relatório.', e);
+            }
+        })();
+        
+        console.log('✅ Dados salvos no IndexedDB!');
+        
+    } catch (error) {
+        console.error('❌ Erro ao salvar no histórico:', error);
+        alert('❌ Erro ao salvar dados. Tente novamente.');
     }
 }
 
 // Consultar histórico por período
-function consultarHistorico() {
+async function consultarHistorico() {
     const dataInicio = document.getElementById('dataInicio').value;
     const dataFim = document.getElementById('dataFim').value;
     
@@ -746,17 +800,21 @@ function consultarHistorico() {
         return;
     }
     
-    // Filtrar registros no período
-    const registrosPeriodo = historicoVendas.filter(r => {
-        const dataReg = criarDataLocal(r.data);
-        return dataReg >= inicio && dataReg <= fim;
-    });
-    
-    // Ordenar por data
-    registrosPeriodo.sort((a, b) => criarDataLocal(a.data) - criarDataLocal(b.data));
-    
-    // Exibir resultados
-    exibirResultadosHistorico(registrosPeriodo, dataInicio, dataFim);
+    try {
+        // Buscar registros do IndexedDB por período
+        const registrosPeriodo = await buscarRegistrosPorPeriodo(dataInicio, dataFim);
+        
+        // Ordenar por data
+        registrosPeriodo.sort((a, b) => criarDataLocal(a.data) - criarDataLocal(b.data));
+        
+        // Exibir resultados
+        exibirResultadosHistorico(registrosPeriodo, dataInicio, dataFim);
+        
+        console.log(`📊 Encontrados ${registrosPeriodo.length} registros no período`);
+    } catch (error) {
+        console.error('❌ Erro ao consultar histórico:', error);
+        alert('❌ Erro ao consultar histórico. Tente novamente.');
+    }
 }
 
 // Exibir resultados do histórico
@@ -803,7 +861,7 @@ function exibirResultadosHistorico(registros, dataInicio, dataFim) {
                 <td class="destaque-kg">${reg.totais.tirarKg.toFixed(1)} kg</td>
                 <td>
                     <button class="btn-mini btn-info" onclick="verDetalhes('${reg.data}')">Ver Detalhes</button>
-                    <button class="btn-mini btn-danger" onclick="excluirRegistro('${reg.data}')">Excluir</button>
+                    <button class="btn-mini btn-danger" onclick="excluirRegistroHistorico(${reg.id}, '${reg.data}')">Excluir</button>
                 </td>
             </tr>
         `;
@@ -918,19 +976,24 @@ function fecharDetalhes() {
 }
 
 // Excluir registro
-function excluirRegistro(data) {
+async function excluirRegistroHistorico(id, data) {
     const dataFormatada = criarDataLocal(data).toLocaleDateString('pt-BR');
     
     if (confirm(`Deseja realmente excluir o registro de ${dataFormatada}?`)) {
-        historicoVendas = historicoVendas.filter(r => r.data !== data);
-        salvarHistorico();
-        alert('Registro excluído com sucesso!');
-        
-        // Recarregar consulta se estiver no modal
-        const dataInicio = document.getElementById('dataInicio').value;
-        const dataFim = document.getElementById('dataFim').value;
-        if (dataInicio && dataFim) {
-            consultarHistorico();
+        try {
+            await excluirRegistro(id);
+            await carregarHistorico();
+            alert('✅ Registro excluído com sucesso!');
+            
+            // Recarregar consulta se estiver no modal
+            const dataInicio = document.getElementById('dataInicio').value;
+            const dataFim = document.getElementById('dataFim').value;
+            if (dataInicio && dataFim) {
+                await consultarHistorico();
+            }
+        } catch (error) {
+            console.error('❌ Erro ao excluir registro:', error);
+            alert('❌ Erro ao excluir registro. Tente novamente.');
         }
     }
 }
@@ -1113,6 +1176,10 @@ function fecharEstatisticas() {
 function abrirHistorico() {
     document.getElementById('historicoModal').style.display = 'block';
     
+    // Mostrar botões de exportação/importação
+    document.getElementById('exportarBackupBtn').style.display = 'inline-block';
+    document.getElementById('importarBackupBtn').style.display = 'inline-block';
+    
     // Definir datas padrão (últimos 30 dias)
     const hoje = new Date();
     const trintaDiasAtras = new Date();
@@ -1139,53 +1206,118 @@ function fecharHistorico() {
     document.getElementById('historicoModal').style.display = 'none';
 }
 
+// Exportar backup completo do banco
+async function exportarBackupCompleto() {
+    try {
+        const dados = await exportarBancoDeDados();
+        
+        const blob = new Blob([JSON.stringify(dados, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `backup-frango-${new Date().toISOString().split('T')[0]}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        alert('✅ Backup exportado com sucesso!');
+    } catch (error) {
+        console.error('❌ Erro ao exportar backup:', error);
+        alert('❌ Erro ao exportar backup. Tente novamente.');
+    }
+}
+
+// Importar backup
+async function importarBackupCompleto() {
+    const input = document.getElementById('importFileInput');
+    input.click();
+}
+
+// Processar arquivo de importação
+async function processarImportacao(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    
+    const reader = new FileReader();
+    reader.onload = async function(e) {
+        try {
+            const dados = JSON.parse(e.target.result);
+            
+            if (confirm('⚠️ Importar dados irá sobrescrever os dados existentes. Deseja continuar?')) {
+                await importarBancoDeDados(dados);
+                await carregarHistorico();
+                await carregarConfiguracoes();
+                await carregarFeriadosPersonalizados();
+                
+                alert('✅ Backup importado com sucesso!');
+                
+                // Recarregar página para atualizar tudo
+                location.reload();
+            }
+        } catch (error) {
+            console.error('❌ Erro ao importar backup:', error);
+            alert('❌ Erro ao importar backup. Verifique se o arquivo é válido.');
+        }
+    };
+    reader.readAsText(file);
+}
+
 // Event listeners para histórico
 document.addEventListener('DOMContentLoaded', function() {
     const btnHistorico = document.getElementById('historicoBtn');
     const btnSalvarDia = document.getElementById('salvarDiaBtn');
     const btnConsultar = document.getElementById('consultarBtn');
     const btnFecharHistorico = document.getElementById('closeHistorico');
+    const btnExportarBackup = document.getElementById('exportarBackupBtn');
+    const btnImportarBackup = document.getElementById('importarBackupBtn');
+    const importFileInput = document.getElementById('importFileInput');
     
     if (btnHistorico) btnHistorico.addEventListener('click', abrirHistorico);
     if (btnSalvarDia) btnSalvarDia.addEventListener('click', salvarDiaNoHistorico);
     if (btnConsultar) btnConsultar.addEventListener('click', consultarHistorico);
     if (btnFecharHistorico) btnFecharHistorico.addEventListener('click', fecharHistorico);
+    if (btnExportarBackup) btnExportarBackup.addEventListener('click', exportarBackupCompleto);
+    if (btnImportarBackup) btnImportarBackup.addEventListener('click', importarBackupCompleto);
+    if (importFileInput) importFileInput.addEventListener('change', processarImportacao);
 });
 
 // ==================== CONFIGURAÇÃO DE QUANTIDADES ====================
 
 // Carregar configurações salvas ou usar padrões
-function carregarConfiguracoes() {
-    const configSalvas = localStorage.getItem('configQuantidades');
-    
-    if (configSalvas) {
-        const config = JSON.parse(configSalvas);
+async function carregarConfiguracoes() {
+    try {
+        const config = await buscarConfiguracao('quantidades');
         
-        // Atualizar as configurações globais
-        chickenConfigNormal.peito.total = config.normal.peito;
-        chickenConfigNormal.coxa.total = config.normal.coxa;
-        chickenConfigNormal.asa.total = config.normal.asa;
-        chickenConfigNormal.file.total = config.normal.file;
-        chickenConfigNormal.chick.total = config.normal.chick;
-        
-        chickenConfigDomingo.peito.total = config.domingo.peito;
-        chickenConfigDomingo.coxa.total = config.domingo.coxa;
-        chickenConfigDomingo.asa.total = config.domingo.asa;
-        chickenConfigDomingo.file.total = config.domingo.file;
-        chickenConfigDomingo.chick.total = config.domingo.chick;
-        
-        chickenConfigEspecial.peito.total = config.especial.peito;
-        chickenConfigEspecial.coxa.total = config.especial.coxa;
-        chickenConfigEspecial.asa.total = config.especial.asa;
-        chickenConfigEspecial.file.total = config.especial.file;
-        chickenConfigEspecial.chick.total = config.especial.chick;
-        
-        console.log('✅ Configurações personalizadas carregadas');
+        if (config) {
+            // Atualizar as configurações globais
+            chickenConfigNormal.peito.total = config.normal.peito;
+            chickenConfigNormal.coxa.total = config.normal.coxa;
+            chickenConfigNormal.asa.total = config.normal.asa;
+            chickenConfigNormal.file.total = config.normal.file;
+            chickenConfigNormal.chick.total = config.normal.chick;
+            
+            chickenConfigDomingo.peito.total = config.domingo.peito;
+            chickenConfigDomingo.coxa.total = config.domingo.coxa;
+            chickenConfigDomingo.asa.total = config.domingo.asa;
+            chickenConfigDomingo.file.total = config.domingo.file;
+            chickenConfigDomingo.chick.total = config.domingo.chick;
+            
+            chickenConfigEspecial.peito.total = config.especial.peito;
+            chickenConfigEspecial.coxa.total = config.especial.coxa;
+            chickenConfigEspecial.asa.total = config.especial.asa;
+            chickenConfigEspecial.file.total = config.especial.file;
+            chickenConfigEspecial.chick.total = config.especial.chick;
+            
+            console.log('✅ Configurações personalizadas carregadas do IndexedDB');
+        }
+    } catch (error) {
+        console.warn('⚠️ Erro ao carregar configurações:', error);
     }
 }
 
-// Salvar configurações no localStorage
-function salvarConfiguracoes() {
+// Salvar configurações no IndexedDB
+async function salvarConfiguracoes() {
     const config = {
         normal: {
             peito: parseInt(document.getElementById('normal_peito').value),
@@ -1210,54 +1342,71 @@ function salvarConfiguracoes() {
         }
     };
     
-    localStorage.setItem('configQuantidades', JSON.stringify(config));
-    
-    // Aplicar as novas configurações
-    carregarConfiguracoes();
-    
-    // Atualizar a tabela imediatamente
-    const dataAtual = document.getElementById('date').value;
-    atualizarTipoDia(dataAtual);
-    atualizarValoresTabela();
-    
-    alert('✅ Configurações salvas com sucesso!');
-    fecharConfigQuantidades();
-}
-
-// Restaurar configurações padrão
-function restaurarPadroes() {
-    if (confirm('Deseja realmente restaurar as configurações padrão?')) {
-        // Remover configurações salvas
-        localStorage.removeItem('configQuantidades');
+    try {
+        await salvarConfiguracao('quantidades', config);
         
-        // Recarregar valores padrão
-        document.getElementById('normal_peito').value = 9;
-        document.getElementById('normal_coxa').value = 11;
-        document.getElementById('normal_asa').value = 4;
-        document.getElementById('normal_file').value = 24;
-        document.getElementById('normal_chick').value = 3;
+        // Aplicar as novas configurações
+        await carregarConfiguracoes();
         
-        document.getElementById('domingo_peito').value = 10;
-        document.getElementById('domingo_coxa').value = 12;
-        document.getElementById('domingo_asa').value = 4;
-        document.getElementById('domingo_file').value = 32;
-        document.getElementById('domingo_chick').value = 3;
-        
-        document.getElementById('especial_peito').value = 12;
-        document.getElementById('especial_coxa').value = 14;
-        document.getElementById('especial_asa').value = 5;
-        document.getElementById('especial_file').value = 40;
-        document.getElementById('especial_chick').value = 3;
-        
-        // Recarregar configurações
-        carregarConfiguracoes();
-        
-        // Atualizar tabela
+        // Atualizar a tabela imediatamente
         const dataAtual = document.getElementById('date').value;
         atualizarTipoDia(dataAtual);
         atualizarValoresTabela();
         
-        alert('✅ Configurações padrão restauradas!');
+        alert('✅ Configurações salvas com sucesso!');
+        fecharConfigQuantidades();
+    } catch (error) {
+        console.error('❌ Erro ao salvar configurações:', error);
+        alert('❌ Erro ao salvar configurações. Tente novamente.');
+    }
+}
+
+// Restaurar configurações padrão
+async function restaurarPadroes() {
+    if (confirm('Deseja realmente restaurar as configurações padrão?')) {
+        try {
+            // Configuração padrão
+            const configPadrao = {
+                normal: { peito: 9, coxa: 11, asa: 4, file: 24, chick: 3 },
+                domingo: { peito: 10, coxa: 12, asa: 4, file: 32, chick: 3 },
+                especial: { peito: 12, coxa: 14, asa: 5, file: 46, chick: 3 }
+            };
+            
+            // Salvar no IndexedDB
+            await salvarConfiguracao('quantidades', configPadrao);
+            
+            // Recarregar valores padrão na interface
+            document.getElementById('normal_peito').value = 9;
+            document.getElementById('normal_coxa').value = 11;
+            document.getElementById('normal_asa').value = 4;
+            document.getElementById('normal_file').value = 24;
+            document.getElementById('normal_chick').value = 3;
+            
+            document.getElementById('domingo_peito').value = 10;
+            document.getElementById('domingo_coxa').value = 12;
+            document.getElementById('domingo_asa').value = 4;
+            document.getElementById('domingo_file').value = 32;
+            document.getElementById('domingo_chick').value = 3;
+            
+            document.getElementById('especial_peito').value = 12;
+            document.getElementById('especial_coxa').value = 14;
+            document.getElementById('especial_asa').value = 5;
+            document.getElementById('especial_file').value = 46;
+            document.getElementById('especial_chick').value = 3;
+            
+            // Recarregar configurações
+            await carregarConfiguracoes();
+            
+            // Atualizar tabela
+            const dataAtual = document.getElementById('date').value;
+            atualizarTipoDia(dataAtual);
+            atualizarValoresTabela();
+            
+            alert('✅ Configurações padrão restauradas!');
+        } catch (error) {
+            console.error('❌ Erro ao restaurar padrões:', error);
+            alert('❌ Erro ao restaurar padrões. Tente novamente.');
+        }
     }
 }
 

@@ -259,11 +259,15 @@
                         <input type="date" id="dataFim" class="form-input">
                     </div>
                     <button id="consultarBtn" class="btn btn-primary">🔍 Consultar</button>
+                    <button id="exportarBackupBtn" class="btn btn-success" style="display:none;">📥 Exportar Backup</button>
+                    <button id="importarBackupBtn" class="btn btn-warning" style="display:none;">📤 Importar Backup</button>
                 </div>
 
                 <div id="resultadosHistorico" class="resultados-container">
                     <p class="instrucao">Selecione um período e clique em "Consultar" para ver os dados.</p>
                 </div>
+                
+                <input type="file" id="importFileInput" accept=".json" style="display:none;">
             </div>
         </div>
 
@@ -280,6 +284,9 @@
 
     <!-- EmailJS SDK -->
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    
+    <!-- IndexedDB Manager -->
+    <script src="indexedDB.js"></script>
     
     <!-- Configuração de Email -->
     <script src="emailConfig.js"></script>
