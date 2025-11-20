@@ -762,17 +762,11 @@ async function salvarDiaNoHistorico() {
         // Recarregar histórico atualizado
         await carregarHistorico();
         
-        console.log('✅ Dados salvos no IndexedDB!');
-        
-        // Enviar email com os dados salvos (aguardar completar)
+        // Enviar email com os dados salvos
         try {
-            console.log('📧 Tentando enviar email...');
             const enviado = await enviarEmailHistorico(registro);
             if (enviado) {
-                console.log('✅ Email enviado com sucesso!');
-                alert('✅ Dados salvos e email enviado!');
-            } else {
-                console.log('⚠️ Email não foi enviado (retornou false)');
+                alert('✅ Dados salvos e email enviado com sucesso!');
             }
         } catch (e) {
             console.error('❌ Erro ao enviar email:', e);

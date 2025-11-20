@@ -1,13 +1,14 @@
 // ==================== CONFIGURAÇÃO DE EMAIL ====================
 // EmailJS Configuration - https://www.emailjs.com/
 
-// INSTRUÇÕES DE CONFIGURAÇÃO:
-// 1. Crie conta em: https://www.emailjs.com/
-// 2. Vá em "Email Services" e conecte sua conta Gmail
-// 3. Vá em "Email Templates" e crie um template
-// 4. Copie os IDs abaixo e cole aqui
+// ⚠️ ATENÇÃO: NÃO ALTERAR ESTAS CONFIGURAÇÕES! ⚠️
+// Sistema em produção - Credenciais funcionando perfeitamente
+// Qualquer alteração quebrará o envio automático de emails
+// Última atualização: 21/11/2025
+// Status: ✅ FUNCIONANDO
 
 const EMAIL_CONFIG = {
+    // ⚠️ NÃO ALTERAR - Configurações em produção
     SERVICE_ID: 'service_bzn3p0e',
     TEMPLATE_ID: 'template_5ff9i4k',
     PUBLIC_KEY: 'vu1MEUERWl1VVK0J2',
@@ -29,32 +30,19 @@ const EMAIL_CONFIG = {
 
 // Função para enviar email com os dados do histórico
 async function enviarEmailHistorico(dadosDia) {
-    console.log('📧 Função enviarEmailHistorico chamada');
-    console.log('📦 Dados recebidos:', dadosDia);
-    
     // Verificar se EmailJS está carregado
     if (typeof emailjs === 'undefined') {
         console.error('❌ EmailJS não carregado! Verifique sua conexão.');
-        alert('⚠️ Serviço de email não disponível. Verifique sua internet.');
         return false;
     }
-    console.log('✅ EmailJS está carregado');
     
     // Verificar se EmailJS está configurado
-    console.log('🔑 Verificando configurações...');
-    console.log('SERVICE_ID:', EMAIL_CONFIG.SERVICE_ID);
-    console.log('TEMPLATE_ID:', EMAIL_CONFIG.TEMPLATE_ID);
-    console.log('PUBLIC_KEY:', EMAIL_CONFIG.PUBLIC_KEY ? '***' + EMAIL_CONFIG.PUBLIC_KEY.slice(-4) : 'undefined');
-    
     if (!EMAIL_CONFIG.SERVICE_ID || !EMAIL_CONFIG.TEMPLATE_ID || !EMAIL_CONFIG.PUBLIC_KEY) {
-        console.error('❌ EmailJS não configurado! Defina SERVICE_ID, TEMPLATE_ID e PUBLIC_KEY.');
-        alert('⚠️ Email não configurado. Defina SERVICE_ID, TEMPLATE_ID e PUBLIC_KEY nas configurações.');
+        console.error('❌ EmailJS não configurado!');
         return false;
     }
-    console.log('✅ Configurações OK');
 
     try {
-        console.log('📨 Preparando dados do email...');
         // Formatar dados para o email
         const emailData = {
             to_email: EMAIL_CONFIG.DESTINATARIOS.join(', '),
@@ -99,9 +87,6 @@ async function enviarEmailHistorico(dadosDia) {
             message: `Dados salvos automaticamente pelo sistema em ${new Date().toLocaleString('pt-BR')}`
         };
 
-        console.log('📤 Enviando email via EmailJS...');
-        console.log('📋 Dados do email:', emailData);
-        
         // Enviar email usando EmailJS
         const response = await emailjs.send(
             EMAIL_CONFIG.SERVICE_ID,
@@ -110,25 +95,11 @@ async function enviarEmailHistorico(dadosDia) {
             EMAIL_CONFIG.PUBLIC_KEY
         );
 
-        console.log('✅ Email enviado com sucesso!', response);
-        console.log('📬 Status:', response.status);
-        console.log('📝 Text:', response.text);
+        console.log('✅ Email enviado com sucesso! Status:', response.status);
         return true;
 
     } catch (error) {
-        console.error('❌ Erro ao enviar email:', error);
-        console.error('❌ Tipo do erro:', typeof error);
-        console.error('❌ Mensagem:', error.message);
-        console.error('❌ Status:', error.status);
-        console.error('❌ Text:', error.text);
-        console.error('❌ Stack:', error.stack);
-        
-        // Mostrar erro amigável para o usuário
-        if (error.text) {
-            console.error('📧 Erro do EmailJS:', error.text);
-        }
-        
-        // Re-lançar o erro para ser capturado no script.js
+        console.error('❌ Erro ao enviar email:', error.text || error.message);
         throw error;
     }
 }
