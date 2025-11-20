@@ -96,6 +96,7 @@
             <button id="salvarDiaBtn" class="btn btn-success">💾 Salvar no Histórico</button>
             <button id="historicoBtn" class="btn btn-info">📊 Consultar Histórico</button>
             <button id="resetBtn" class="btn btn-secondary">Limpar Tudo</button>
+            <button id="configQuantidadesBtn" class="btn btn-warning">🔧 Configurar Quantidades</button>
             <button id="configBtn" class="btn btn-info">⚙️ Configurar Feriados</button>
             <button id="printBtn" class="btn btn-primary">Imprimir</button>
         </div>
@@ -138,6 +139,105 @@
                         <li>25/12 - Natal</li>
                     </ul>
                     <p><em>* Feriados móveis (Carnaval, Sexta-feira Santa, Corpus Christi) já estão incluídos até 2026</em></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal de Configuração de Quantidades -->
+        <div id="quantidadesModal" class="modal">
+            <div class="modal-content modal-large">
+                <span class="close" id="closeQuantidades">&times;</span>
+                <h2>🔧 Configurar Quantidades</h2>
+                <p>Defina as quantidades padrão para cada tipo de dia</p>
+                
+                <!-- Dias Normais -->
+                <div class="config-section">
+                    <h3>📅 Dias Normais (Segunda a Quinta)</h3>
+                    <div class="config-grid">
+                        <div class="config-item">
+                            <label>Peito:</label>
+                            <input type="number" id="normal_peito" min="0" max="100" value="9">
+                        </div>
+                        <div class="config-item">
+                            <label>Coxa:</label>
+                            <input type="number" id="normal_coxa" min="0" max="100" value="11">
+                        </div>
+                        <div class="config-item">
+                            <label>Asa:</label>
+                            <input type="number" id="normal_asa" min="0" max="100" value="4">
+                        </div>
+                        <div class="config-item">
+                            <label>Filé:</label>
+                            <input type="number" id="normal_file" min="0" max="100" value="24">
+                        </div>
+                        <div class="config-item">
+                            <label>Chick:</label>
+                            <input type="number" id="normal_chick" min="0" max="100" value="3">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Domingos -->
+                <div class="config-section">
+                    <h3>🌅 Domingos</h3>
+                    <div class="config-grid">
+                        <div class="config-item">
+                            <label>Peito:</label>
+                            <input type="number" id="domingo_peito" min="0" max="100" value="10">
+                        </div>
+                        <div class="config-item">
+                            <label>Coxa:</label>
+                            <input type="number" id="domingo_coxa" min="0" max="100" value="12">
+                        </div>
+                        <div class="config-item">
+                            <label>Asa:</label>
+                            <input type="number" id="domingo_asa" min="0" max="100" value="4">
+                        </div>
+                        <div class="config-item">
+                            <label>Filé:</label>
+                            <input type="number" id="domingo_file" min="0" max="100" value="32">
+                        </div>
+                        <div class="config-item">
+                            <label>Chick:</label>
+                            <input type="number" id="domingo_chick" min="0" max="100" value="3">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dias Especiais -->
+                <div class="config-section">
+                    <h3>⭐ Dias Especiais (Sexta/Sábado/Feriados/Vésperas)</h3>
+                    <div class="config-grid">
+                        <div class="config-item">
+                            <label>Peito:</label>
+                            <input type="number" id="especial_peito" min="0" max="100" value="12">
+                        </div>
+                        <div class="config-item">
+                            <label>Coxa:</label>
+                            <input type="number" id="especial_coxa" min="0" max="100" value="14">
+                        </div>
+                        <div class="config-item">
+                            <label>Asa:</label>
+                            <input type="number" id="especial_asa" min="0" max="100" value="5">
+                        </div>
+                        <div class="config-item">
+                            <label>Filé:</label>
+                            <input type="number" id="especial_file" min="0" max="100" value="40">
+                        </div>
+                        <div class="config-item">
+                            <label>Chick:</label>
+                            <input type="number" id="especial_chick" min="0" max="100" value="3">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="config-actions">
+                    <button id="salvarQuantidadesBtn" class="btn btn-success">💾 Salvar Configurações</button>
+                    <button id="resetQuantidadesBtn" class="btn btn-secondary">🔄 Restaurar Padrões</button>
+                </div>
+
+                <div class="config-info">
+                    <p><strong>💡 Dica:</strong> As configurações são salvas automaticamente e aplicadas imediatamente aos cálculos.</p>
                 </div>
             </div>
         </div>

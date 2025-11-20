@@ -18,6 +18,12 @@ Um aplicativo web moderno para calcular as quantidades de frango a serem prepara
   - **Domingos**: 10 peito, 12 coxa, 4 asa, 32 filé, 3 chick
   - **Dias normais** (segunda a quinta): 9 peito, 11 coxa, 4 asa, 24 filé, 3 chick
 
+- **🔧 Configuração de Quantidades Personalizada**:
+  - Personalize as quantidades padrão para cada tipo de dia
+  - Configure dias normais, domingos e dias especiais
+  - Salve suas configurações no navegador
+  - Restaure os valores padrão quando quiser
+
 - **Gerenciamento de Feriados**:
   - Feriados nacionais pré-cadastrados
   - Adicione feriados locais/municipais personalizados
@@ -37,8 +43,9 @@ Um aplicativo web moderno para calcular as quantidades de frango a serem prepara
    - As quantidades da coluna "Trabalhar" são ajustadas automaticamente
 3. **Digite a quantidade que sobrou** de cada tipo de frango na coluna "Final (Sobrou)"
 4. **Veja os cálculos automáticos** nas colunas "Fazer Porções" e "Tirar - KG"
-5. **Configure feriados** (opcional): Clique em "⚙️ Configurar Feriados" para adicionar feriados locais
-6. **Use os botões** para limpar tudo ou imprimir
+5. **Configure quantidades** (opcional): Clique em "🔧 Configurar Quantidades" para personalizar os valores padrão
+6. **Configure feriados** (opcional): Clique em "⚙️ Configurar Feriados" para adicionar feriados locais
+7. **Use os botões** para limpar tudo ou imprimir
 
 ## 📊 Configurações dos Cálculos
 
@@ -62,9 +69,13 @@ Um aplicativo web moderno para calcular as quantidades de frango a serem prepara
 ## 🔧 Personalização
 
 ### Valores Padrão
-Para alterar os valores padrão de dias normais e especiais, edite o arquivo `script.js`:
-- **Dias normais**: seção `chickenConfigNormal`
-- **Dias especiais**: seção `chickenConfigEspecial`
+Você pode personalizar as quantidades padrão diretamente pela interface:
+1. Clique no botão "🔧 Configurar Quantidades"
+2. Edite os valores para dias normais, domingos e dias especiais
+3. Clique em "💾 Salvar Configurações"
+4. Use "🔄 Restaurar Padrões" para voltar aos valores originais
+
+As configurações são salvas automaticamente no navegador e aplicadas imediatamente!
 
 ### Feriados
 - **Feriados fixos nacionais**: pré-cadastrados no sistema

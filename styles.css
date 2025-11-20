@@ -314,6 +314,16 @@ tfoot td {
     box-shadow: 0 8px 15px rgba(220, 53, 69, 0.3);
 }
 
+.btn-warning {
+    background: linear-gradient(135deg, #ffc107, #ff9800);
+    color: white;
+}
+
+.btn-warning:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 15px rgba(255, 193, 7, 0.3);
+}
+
 /* Seção de informações */
 .info-section {
     padding: 30px;
@@ -910,6 +920,100 @@ tfoot td {
 
 .tabela-stats tbody tr:nth-child(even) {
     background: #f8f9fa;
+}
+
+/* ====================CONFIGURAÇÃO DE QUANTIDADES ==================== */
+
+.config-section {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.config-section h3 {
+    color: #495057;
+    margin-bottom: 15px;
+    font-size: 1.1rem;
+    border-bottom: 2px solid #dee2e6;
+    padding-bottom: 10px;
+}
+
+.config-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.config-item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.config-item label {
+    font-weight: 600;
+    color: #495057;
+    font-size: 0.95rem;
+}
+
+.config-item input[type="number"] {
+    padding: 10px;
+    border: 2px solid #dee2e6;
+    border-radius: 6px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.config-item input[type="number"]:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    transform: scale(1.05);
+}
+
+.config-item input[type="number"]:hover {
+    border-color: #667eea;
+}
+
+.config-actions {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    padding: 20px 0;
+    border-top: 2px solid #dee2e6;
+    margin-top: 20px;
+}
+
+.config-info {
+    background: #e3f2fd;
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 15px;
+}
+
+.config-info p {
+    margin: 0;
+    color: #1976d2;
+    font-size: 0.95rem;
+}
+
+/* Responsividade para configurações */
+@media (max-width: 768px) {
+    .config-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .config-actions {
+        flex-direction: column;
+    }
+    
+    .config-actions .btn {
+        width: 100%;
+    }
 }
 
 /* Responsividade para histórico */

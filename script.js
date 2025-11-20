@@ -1151,3 +1151,169 @@ document.addEventListener('DOMContentLoaded', function() {
     if (btnConsultar) btnConsultar.addEventListener('click', consultarHistorico);
     if (btnFecharHistorico) btnFecharHistorico.addEventListener('click', fecharHistorico);
 });
+
+// ==================== CONFIGURAÇÃO DE QUANTIDADES ====================
+
+// Carregar configurações salvas ou usar padrões
+function carregarConfiguracoes() {
+    const configSalvas = localStorage.getItem('configQuantidades');
+    
+    if (configSalvas) {
+        const config = JSON.parse(configSalvas);
+        
+        // Atualizar as configurações globais
+        chickenConfigNormal.peito.total = config.normal.peito;
+        chickenConfigNormal.coxa.total = config.normal.coxa;
+        chickenConfigNormal.asa.total = config.normal.asa;
+        chickenConfigNormal.file.total = config.normal.file;
+        chickenConfigNormal.chick.total = config.normal.chick;
+        
+        chickenConfigDomingo.peito.total = config.domingo.peito;
+        chickenConfigDomingo.coxa.total = config.domingo.coxa;
+        chickenConfigDomingo.asa.total = config.domingo.asa;
+        chickenConfigDomingo.file.total = config.domingo.file;
+        chickenConfigDomingo.chick.total = config.domingo.chick;
+        
+        chickenConfigEspecial.peito.total = config.especial.peito;
+        chickenConfigEspecial.coxa.total = config.especial.coxa;
+        chickenConfigEspecial.asa.total = config.especial.asa;
+        chickenConfigEspecial.file.total = config.especial.file;
+        chickenConfigEspecial.chick.total = config.especial.chick;
+        
+        console.log('✅ Configurações personalizadas carregadas');
+    }
+}
+
+// Salvar configurações no localStorage
+function salvarConfiguracoes() {
+    const config = {
+        normal: {
+            peito: parseInt(document.getElementById('normal_peito').value),
+            coxa: parseInt(document.getElementById('normal_coxa').value),
+            asa: parseInt(document.getElementById('normal_asa').value),
+            file: parseInt(document.getElementById('normal_file').value),
+            chick: parseInt(document.getElementById('normal_chick').value)
+        },
+        domingo: {
+            peito: parseInt(document.getElementById('domingo_peito').value),
+            coxa: parseInt(document.getElementById('domingo_coxa').value),
+            asa: parseInt(document.getElementById('domingo_asa').value),
+            file: parseInt(document.getElementById('domingo_file').value),
+            chick: parseInt(document.getElementById('domingo_chick').value)
+        },
+        especial: {
+            peito: parseInt(document.getElementById('especial_peito').value),
+            coxa: parseInt(document.getElementById('especial_coxa').value),
+            asa: parseInt(document.getElementById('especial_asa').value),
+            file: parseInt(document.getElementById('especial_file').value),
+            chick: parseInt(document.getElementById('especial_chick').value)
+        }
+    };
+    
+    localStorage.setItem('configQuantidades', JSON.stringify(config));
+    
+    // Aplicar as novas configurações
+    carregarConfiguracoes();
+    
+    // Atualizar a tabela imediatamente
+    const dataAtual = document.getElementById('date').value;
+    atualizarTipoDia(dataAtual);
+    atualizarValoresTabela();
+    
+    alert('✅ Configurações salvas com sucesso!');
+    fecharConfigQuantidades();
+}
+
+// Restaurar configurações padrão
+function restaurarPadroes() {
+    if (confirm('Deseja realmente restaurar as configurações padrão?')) {
+        // Remover configurações salvas
+        localStorage.removeItem('configQuantidades');
+        
+        // Recarregar valores padrão
+        document.getElementById('normal_peito').value = 9;
+        document.getElementById('normal_coxa').value = 11;
+        document.getElementById('normal_asa').value = 4;
+        document.getElementById('normal_file').value = 24;
+        document.getElementById('normal_chick').value = 3;
+        
+        document.getElementById('domingo_peito').value = 10;
+        document.getElementById('domingo_coxa').value = 12;
+        document.getElementById('domingo_asa').value = 4;
+        document.getElementById('domingo_file').value = 32;
+        document.getElementById('domingo_chick').value = 3;
+        
+        document.getElementById('especial_peito').value = 12;
+        document.getElementById('especial_coxa').value = 14;
+        document.getElementById('especial_asa').value = 5;
+        document.getElementById('especial_file').value = 40;
+        document.getElementById('especial_chick').value = 3;
+        
+        // Recarregar configurações
+        carregarConfiguracoes();
+        
+        // Atualizar tabela
+        const dataAtual = document.getElementById('date').value;
+        atualizarTipoDia(dataAtual);
+        atualizarValoresTabela();
+        
+        alert('✅ Configurações padrão restauradas!');
+    }
+}
+
+// Carregar valores no modal
+function carregarValoresNoModal() {
+    // Carregar valores atuais das configurações
+    document.getElementById('normal_peito').value = chickenConfigNormal.peito.total;
+    document.getElementById('normal_coxa').value = chickenConfigNormal.coxa.total;
+    document.getElementById('normal_asa').value = chickenConfigNormal.asa.total;
+    document.getElementById('normal_file').value = chickenConfigNormal.file.total;
+    document.getElementById('normal_chick').value = chickenConfigNormal.chick.total;
+    
+    document.getElementById('domingo_peito').value = chickenConfigDomingo.peito.total;
+    document.getElementById('domingo_coxa').value = chickenConfigDomingo.coxa.total;
+    document.getElementById('domingo_asa').value = chickenConfigDomingo.asa.total;
+    document.getElementById('domingo_file').value = chickenConfigDomingo.file.total;
+    document.getElementById('domingo_chick').value = chickenConfigDomingo.chick.total;
+    
+    document.getElementById('especial_peito').value = chickenConfigEspecial.peito.total;
+    document.getElementById('especial_coxa').value = chickenConfigEspecial.coxa.total;
+    document.getElementById('especial_asa').value = chickenConfigEspecial.asa.total;
+    document.getElementById('especial_file').value = chickenConfigEspecial.file.total;
+    document.getElementById('especial_chick').value = chickenConfigEspecial.chick.total;
+}
+
+// Abrir modal de configuração
+function abrirConfigQuantidades() {
+    carregarValoresNoModal();
+    document.getElementById('quantidadesModal').style.display = 'block';
+}
+
+// Fechar modal de configuração
+function fecharConfigQuantidades() {
+    document.getElementById('quantidadesModal').style.display = 'none';
+}
+
+// Event listeners para configuração de quantidades
+document.addEventListener('DOMContentLoaded', function() {
+    // Carregar configurações ao iniciar
+    carregarConfiguracoes();
+    
+    const btnConfigQuantidades = document.getElementById('configQuantidadesBtn');
+    const btnSalvarQuantidades = document.getElementById('salvarQuantidadesBtn');
+    const btnResetQuantidades = document.getElementById('resetQuantidadesBtn');
+    const btnFecharQuantidades = document.getElementById('closeQuantidades');
+    
+    if (btnConfigQuantidades) btnConfigQuantidades.addEventListener('click', abrirConfigQuantidades);
+    if (btnSalvarQuantidades) btnSalvarQuantidades.addEventListener('click', salvarConfiguracoes);
+    if (btnResetQuantidades) btnResetQuantidades.addEventListener('click', restaurarPadroes);
+    if (btnFecharQuantidades) btnFecharQuantidades.addEventListener('click', fecharConfigQuantidades);
+    
+    // Fechar ao clicar fora do modal
+    window.addEventListener('click', function(event) {
+        const modal = document.getElementById('quantidadesModal');
+        if (event.target === modal) {
+            fecharConfigQuantidades();
+        }
+    });
+});
