@@ -415,23 +415,16 @@ function carregarDados() {
     }
 }
 
-// ==================== INICIALIZAÇÃO DA APLICAÇÃO ====================
-// Variável global para controlar se o DB foi inicializado
-let dbInicializado = false;
-
-// Inicializar aplicação - PONTO ÚNICO DE ENTRADA
+// Inicializar aplicação
 document.addEventListener('DOMContentLoaded', async function() {
     try {
-        console.log('🚀 Iniciando aplicação...');
-        
-        // 1. Inicializar IndexedDB PRIMEIRO
+        // Inicializar IndexedDB
         await inicializarDB();
-        dbInicializado = true;
-        console.log('✅ IndexedDB inicializado!');
+        console.log('🗄️ IndexedDB inicializado!');
         
-        // 2. Verificar se precisa migrar dados do localStorage
+        // Verificar se precisa migrar dados do localStorage
         const historicoLocal = localStorage.getItem('historicoVendas');
-        if (historicoLocal && historicoLocal !== '[]') {
+        if (historicoLocal) {
             const confirmarMigracao = confirm('Foram encontrados dados antigos. Deseja migrar para o novo sistema de banco de dados?');
             if (confirmarMigracao) {
                 await migrarLocalStorageParaIndexedDB();
@@ -439,10 +432,8 @@ document.addEventListener('DOMContentLoaded', async function() {
             }
         }
         
-        // 3. Carregar dados da interface
+        // Carregar dados
         carregarDados();
-        
-        // 4. Carregar dados do IndexedDB
         await carregarFeriadosPersonalizados();
         await carregarHistorico();
         await carregarConfiguracoes();
@@ -453,6 +444,10 @@ document.addEventListener('DOMContentLoaded', async function() {
         alert('⚠️ Erro ao inicializar. Por favor, recarregue a página.');
     }
 });
+
+// Salvar dados automaticamente quando houver mudanças
+document.addEventListener('DOMContentLoaded', function() {
+    carregarDados();
     
     // Salvar quando houver mudanças
     const inputs = document.querySelectorAll('.final-input');
@@ -465,12 +460,6 @@ document.addEventListener('DOMContentLoaded', async function() {
 
 // Funções para gerenciar feriados personalizados
 async function carregarFeriadosPersonalizados() {
-    if (!dbInicializado || !db) {
-        console.log('⏳ Aguardando inicialização do IndexedDB para carregar feriados...');
-        feriadosPersonalizados = [];
-        return;
-    }
-    
     try {
         const feriados = await buscarTodosFeriados();
         feriadosPersonalizados = feriados;
@@ -611,12 +600,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Carregar histórico do IndexedDB
 async function carregarHistorico() {
-    if (!dbInicializado || !db) {
-        console.log('⏳ Aguardando inicialização do IndexedDB para carregar histórico...');
-        historicoVendas = [];
-        return;
-    }
-    
     try {
         historicoVendas = await buscarTodosRegistros();
         console.log('📊 Histórico carregado do IndexedDB:', historicoVendas.length, 'registros');
@@ -1281,42 +1264,28 @@ async function processarImportacao(event) {
 }
 
 // Event listeners para histórico
-(function() {
-    // Esperar DOM carregar
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', setupHistorico);
-    } else {
-        setupHistorico();
-    }
+document.addEventListener('DOMContentLoaded', function() {
+    const btnHistorico = document.getElementById('historicoBtn');
+    const btnSalvarDia = document.getElementById('salvarDiaBtn');
+    const btnConsultar = document.getElementById('consultarBtn');
+    const btnFecharHistorico = document.getElementById('closeHistorico');
+    const btnExportarBackup = document.getElementById('exportarBackupBtn');
+    const btnImportarBackup = document.getElementById('importarBackupBtn');
+    const importFileInput = document.getElementById('importFileInput');
     
-    function setupHistorico() {
-        const btnHistorico = document.getElementById('historicoBtn');
-        const btnSalvarDia = document.getElementById('salvarDiaBtn');
-        const btnConsultar = document.getElementById('consultarBtn');
-        const btnFecharHistorico = document.getElementById('closeHistorico');
-        const btnExportarBackup = document.getElementById('exportarBackupBtn');
-        const btnImportarBackup = document.getElementById('importarBackupBtn');
-        const importFileInput = document.getElementById('importFileInput');
-        
-        if (btnHistorico) btnHistorico.addEventListener('click', abrirHistorico);
-        if (btnSalvarDia) btnSalvarDia.addEventListener('click', salvarDiaNoHistorico);
-        if (btnConsultar) btnConsultar.addEventListener('click', consultarHistorico);
-        if (btnFecharHistorico) btnFecharHistorico.addEventListener('click', fecharHistorico);
-        if (btnExportarBackup) btnExportarBackup.addEventListener('click', exportarBackupCompleto);
-        if (btnImportarBackup) btnImportarBackup.addEventListener('click', importarBackupCompleto);
-        if (importFileInput) importFileInput.addEventListener('change', processarImportacao);
-    }
-})();
+    if (btnHistorico) btnHistorico.addEventListener('click', abrirHistorico);
+    if (btnSalvarDia) btnSalvarDia.addEventListener('click', salvarDiaNoHistorico);
+    if (btnConsultar) btnConsultar.addEventListener('click', consultarHistorico);
+    if (btnFecharHistorico) btnFecharHistorico.addEventListener('click', fecharHistorico);
+    if (btnExportarBackup) btnExportarBackup.addEventListener('click', exportarBackupCompleto);
+    if (btnImportarBackup) btnImportarBackup.addEventListener('click', importarBackupCompleto);
+    if (importFileInput) importFileInput.addEventListener('change', processarImportacao);
+});
 
 // ==================== CONFIGURAÇÃO DE QUANTIDADES ====================
 
 // Carregar configurações salvas ou usar padrões
 async function carregarConfiguracoes() {
-    if (!dbInicializado || !db) {
-        console.log('⏳ Aguardando inicialização do IndexedDB...');
-        return;
-    }
-    
     try {
         const config = await buscarConfiguracao('quantidades');
         
@@ -1475,31 +1444,25 @@ function fecharConfigQuantidades() {
 }
 
 // Event listeners para configuração de quantidades
-(function() {
-    // Esperar DOM carregar
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', setupConfigQuantidades);
-    } else {
-        setupConfigQuantidades();
-    }
+document.addEventListener('DOMContentLoaded', function() {
+    // Carregar configurações ao iniciar
+    carregarConfiguracoes();
     
-    function setupConfigQuantidades() {
-        const btnConfigQuantidades = document.getElementById('configQuantidadesBtn');
-        const btnSalvarQuantidades = document.getElementById('salvarQuantidadesBtn');
-        const btnResetQuantidades = document.getElementById('resetQuantidadesBtn');
-        const btnFecharQuantidades = document.getElementById('closeQuantidades');
-        
-        if (btnConfigQuantidades) btnConfigQuantidades.addEventListener('click', abrirConfigQuantidades);
-        if (btnSalvarQuantidades) btnSalvarQuantidades.addEventListener('click', salvarConfiguracoes);
-        if (btnResetQuantidades) btnResetQuantidades.addEventListener('click', restaurarPadroes);
-        if (btnFecharQuantidades) btnFecharQuantidades.addEventListener('click', fecharConfigQuantidades);
-        
-        // Fechar ao clicar fora do modal
-        window.addEventListener('click', function(event) {
-            const modal = document.getElementById('quantidadesModal');
-            if (event.target === modal) {
-                fecharConfigQuantidades();
-            }
-        });
-    }
-})();
+    const btnConfigQuantidades = document.getElementById('configQuantidadesBtn');
+    const btnSalvarQuantidades = document.getElementById('salvarQuantidadesBtn');
+    const btnResetQuantidades = document.getElementById('resetQuantidadesBtn');
+    const btnFecharQuantidades = document.getElementById('closeQuantidades');
+    
+    if (btnConfigQuantidades) btnConfigQuantidades.addEventListener('click', abrirConfigQuantidades);
+    if (btnSalvarQuantidades) btnSalvarQuantidades.addEventListener('click', salvarConfiguracoes);
+    if (btnResetQuantidades) btnResetQuantidades.addEventListener('click', restaurarPadroes);
+    if (btnFecharQuantidades) btnFecharQuantidades.addEventListener('click', fecharConfigQuantidades);
+    
+    // Fechar ao clicar fora do modal
+    window.addEventListener('click', function(event) {
+        const modal = document.getElementById('quantidadesModal');
+        if (event.target === modal) {
+            fecharConfigQuantidades();
+        }
+    });
+});
