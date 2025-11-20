@@ -8,10 +8,9 @@
 // 4. Copie os IDs abaixo e cole aqui
 
 const EMAIL_CONFIG = {
-    // Carrega de localStorage para evitar chaves hardcoded no código
-    SERVICE_ID: localStorage.getItem('EMAILJS_SERVICE_ID') || '',
-    TEMPLATE_ID: localStorage.getItem('EMAILJS_TEMPLATE_ID') || '',
-    PUBLIC_KEY: localStorage.getItem('EMAILJS_PUBLIC_KEY') || '',
+    SERVICE_ID: 'service_bzn3p0e',
+    TEMPLATE_ID: 'template_5ff9i4k',
+    PUBLIC_KEY: 'vu1MEUERWl1VVK0J2',
     
     // Destinatários (já configurados)
     DESTINATARIOS: [
@@ -20,29 +19,11 @@ const EMAIL_CONFIG = {
     ]
 };
 
-// Utilitário para salvar chaves com segurança no navegador (localStorage)
-function configurarEmailJS({ serviceId, templateId, publicKey }) {
-    if (typeof serviceId === 'string') localStorage.setItem('EMAILJS_SERVICE_ID', serviceId.trim());
-    if (typeof templateId === 'string') localStorage.setItem('EMAILJS_TEMPLATE_ID', templateId.trim());
-    if (typeof publicKey === 'string') localStorage.setItem('EMAILJS_PUBLIC_KEY', publicKey.trim());
-    
-    EMAIL_CONFIG.SERVICE_ID = localStorage.getItem('EMAILJS_SERVICE_ID') || '';
-    EMAIL_CONFIG.TEMPLATE_ID = localStorage.getItem('EMAILJS_TEMPLATE_ID') || '';
-    EMAIL_CONFIG.PUBLIC_KEY = localStorage.getItem('EMAILJS_PUBLIC_KEY') || '';
-    
-    if (typeof emailjs !== 'undefined' && EMAIL_CONFIG.PUBLIC_KEY) {
-        emailjs.init(EMAIL_CONFIG.PUBLIC_KEY);
-        console.log('✅ EmailJS reconfigurado com sucesso!');
-    }
-}
-
 // Inicializar EmailJS quando a página carregar
 (function() {
-    if (typeof emailjs !== 'undefined' && EMAIL_CONFIG.PUBLIC_KEY) {
+    if (typeof emailjs !== 'undefined') {
         emailjs.init(EMAIL_CONFIG.PUBLIC_KEY);
         console.log('✅ EmailJS inicializado com sucesso!');
-    } else {
-        console.log('ℹ️ EmailJS aguardando configuração de chave pública.');
     }
 })();
 
